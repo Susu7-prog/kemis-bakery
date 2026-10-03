@@ -1,0 +1,84 @@
+/*
+ * NOVA design tokens.
+ * Single light theme. Neutrals are cool and slightly green-grey so the one
+ * accent (cobalt) reads as a signal rather than decoration.
+ */
+@theme {
+  /* Colour */
+  --color-paper: #f1f2f0;
+  --color-surface: #fafaf9;
+  --color-ink: #1b1e27;
+  --color-muted: #5a5f6b;
+  --color-line: #d6d9d5;
+  --color-line-strong: #b9bdb8;
+  --color-accent: #2f3cf5;
+  --color-accent-strong: #2230d6;
+  --color-accent-soft: #e2e4fd;
+  --color-on-accent: #ffffff;
+  --color-danger: #b42318;
+  --color-success: #17663a;
+
+  /* Typography */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.25rem;
+  --text-body: 1rem;
+  --text-body--line-height: 1.625rem;
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.75rem;
+  --text-title: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+  --text-title--line-height: 1.15;
+  --text-headline: clamp(2.25rem, 1.5rem + 3.2vw, 4rem);
+  --text-headline--line-height: 1.02;
+  --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
+  --text-display--line-height: 0.94;
+
+  /* Radius: restrained; larger radii are reserved for pills and round marks */
+  --radius-sm: 2px;
+  --radius-md: 6px;
+
+  /* Breakpoints (mobile first; base styles target 320px and up) */
+  --breakpoint-xs: 23.4375rem; /* 375px */
+  --breakpoint-sm: 40rem; /* 640px */
+  --breakpoint-md: 48rem; /* 768px */
+  --breakpoint-lg: 64rem; /* 1024px */
+  --breakpoint-xl: 80rem; /* 1280px */
+  --breakpoint-2xl: 96rem; /* 1536px */
+
+  /* Motion */
+  --ease-nova: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-rise: rise 1200ms var(--ease-nova) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: scale(0.86);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+:root {
+  /* Layout */
+  --gutter: 1.25rem;
+  --container-max: 80rem;
+  --header-height: 4rem;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --gutter: 2rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --gutter: 3rem;
+    --header-height: 4.5rem;
+  }
+}
