@@ -1,14 +1,22 @@
 import Link from "next/link";
+import { siteConfig } from "@/lib/config/site";
+import { cn } from "@/lib/utils";
 
-export function Wordmark() {
+/** "Kemi's" is the mark; the full descriptor appears beside it from the sm breakpoint. */
+export function Wordmark({ inverted = false, onClick }: { inverted?: boolean; onClick?: () => void }) {
   return (
     <Link
       href="/"
-      aria-label="NOVA home"
-      className="inline-flex items-center gap-2 font-display text-2xl font-bold tracking-tight"
+      onClick={onClick}
+      aria-label={`${siteConfig.fullName}, home`}
+      className="inline-flex flex-col leading-none"
     >
-      <span aria-hidden="true" className="size-3 rounded-full bg-accent" />
-      NOVA
+      <span className={cn("font-display text-[1.75rem] font-bold tracking-tight", inverted ? "text-paper" : "text-accent")}>
+        Kemi&rsquo;s
+      </span>
+      <span className={cn("mt-1 hidden text-[0.6875rem] tracking-wide sm:block", inverted ? "text-paper/70" : "text-muted")}>
+        Artisanal African Bakery &amp; Spice Shop
+      </span>
     </Link>
   );
 }

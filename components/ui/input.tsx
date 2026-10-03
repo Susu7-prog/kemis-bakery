@@ -6,17 +6,18 @@ type FieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   hint?: string;
   error?: string;
+  hideLabel?: boolean;
 };
 
 /** Labelled text input. Label, hint and error are wired up for assistive tech. */
-export function Field({ label, id, hint, error, className, ...props }: FieldProps) {
+export function Field({ label, id, hint, error, hideLabel, className, ...props }: FieldProps) {
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-caption font-medium">
+      <label htmlFor={id} className={cn("text-caption font-medium", hideLabel && "sr-only")}>
         {label}
       </label>
       <input
@@ -31,16 +32,8 @@ export function Field({ label, id, hint, error, className, ...props }: FieldProp
         )}
         {...props}
       />
-      {hint && !error && (
-        <p id={hintId} className="text-caption text-muted">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={errorId} className="text-caption text-danger">
-          {error}
-        </p>
-      )}
+      {hint && !error && <p id={hintId} className="text-caption text-muted">{hint}</p>}
+      {error && <p id={errorId} role="alert" className="text-caption text-danger">{error}</p>}
     </div>
   );
 }

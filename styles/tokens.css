@@ -1,22 +1,26 @@
 /*
- * NOVA design tokens.
- * Single light theme. Neutrals are cool and slightly green-grey so the one
- * accent (cobalt) reads as a signal rather than decoration.
+ * Kemi's design tokens.
+ * Single light theme with warm neutrals.
  */
 @theme {
-  /* Colour */
-  --color-paper: #f1f2f0;
-  --color-surface: #fafaf9;
-  --color-ink: #1b1e27;
-  --color-muted: #5a5f6b;
-  --color-line: #d6d9d5;
-  --color-line-strong: #b9bdb8;
-  --color-accent: #2f3cf5;
-  --color-accent-strong: #2230d6;
-  --color-accent-soft: #e2e4fd;
+  /* Colour
+   * Hibiscus (zobo) red-crimson as the single brand accent, turmeric as a small
+   * secondary highlight, cocoa as the ink. Neutrals lean warm so food photography
+   * and the product illustrations sit naturally on them. */
+  --color-paper: #f8f4f1;
+  --color-surface: #fffdfb;
+  --color-ink: #2b1810;
+  --color-muted: #6b5a52;
+  --color-line: #e4d9d2;
+  --color-line-strong: #c9b8ae;
+  --color-accent: #a31545;
+  --color-accent-strong: #860f38;
+  --color-accent-soft: #f6dde5;
   --color-on-accent: #ffffff;
+  --color-turmeric: #e3a008;
+  --color-turmeric-soft: #f9ecc4;
   --color-danger: #b42318;
-  --color-success: #17663a;
+  --color-success: #2f6b3f;
 
   /* Typography */
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
@@ -32,7 +36,7 @@
   --text-title--line-height: 1.15;
   --text-headline: clamp(2.25rem, 1.5rem + 3.2vw, 4rem);
   --text-headline--line-height: 1.02;
-  --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
+  --text-display: clamp(2.5rem, 1.4rem + 4.6vw, 5.25rem);
   --text-display--line-height: 0.94;
 
   /* Radius: restrained; larger radii are reserved for pills and round marks */
@@ -48,17 +52,29 @@
   --breakpoint-2xl: 96rem; /* 1536px */
 
   /* Motion */
-  --ease-nova: cubic-bezier(0.22, 1, 0.36, 1);
-  --animate-rise: rise 1200ms var(--ease-nova) both;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-rise: rise 900ms var(--ease-out-soft) both;
+  --animate-drawer: drawer 320ms var(--ease-out-soft) both;
 
   @keyframes rise {
     from {
       opacity: 0;
-      transform: scale(0.86);
+      transform: translateY(28px);
     }
     to {
       opacity: 1;
-      transform: scale(1);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes drawer {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 }

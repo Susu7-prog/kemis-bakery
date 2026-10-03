@@ -4,6 +4,7 @@ import "./globals.css";
 import { siteConfig } from "@/lib/config/site";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { CartSheet } from "@/components/layout/cart-sheet";
 
 const bricolage = localFont({
   src: "./fonts/bricolage-grotesque-latin-wght-normal.woff2",
@@ -22,21 +23,21 @@ const instrument = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name}: ${siteConfig.tagline}`,
+    default: siteConfig.fullName,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
-    title: `${siteConfig.name}: ${siteConfig.tagline}`,
+    title: siteConfig.fullName,
     description: siteConfig.description,
     locale: "en_NG",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f1f2f0",
+  themeColor: "#f8f4f1",
   width: "device-width",
   initialScale: 1,
 };
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <SiteFooter />
+        <CartSheet />
       </body>
     </html>
   );
