@@ -4,8 +4,8 @@ import { ProductGrid } from "@/components/product/product-grid";
 import { featuredCollection } from "@/lib/data/products";
 import { getProductsBySlugs } from "@/lib/products";
 
-export function FeaturedCollection() {
-  const items = getProductsBySlugs(featuredCollection.productSlugs);
+export async function FeaturedCollection() {
+  const items = await getProductsBySlugs(featuredCollection.productSlugs);
   return (
     <section aria-labelledby="featured-title" className="bg-accent-soft py-20 sm:py-28">
       <Container className="grid gap-12 lg:grid-cols-[1fr_2.2fr] lg:gap-14">

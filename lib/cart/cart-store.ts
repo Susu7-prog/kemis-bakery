@@ -26,7 +26,7 @@ export type CartProductInput = {
   stock: number;
 };
 
-const STORAGE_KEY = "kemis-cart-v1";
+const STORAGE_KEY = "kemis-cart-v2";
 const MAX_PER_LINE = 20;
 const EMPTY: CartItem[] = [];
 

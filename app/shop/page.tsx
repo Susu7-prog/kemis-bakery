@@ -8,11 +8,6 @@ import { categories } from "@/lib/data/categories";
 import { getProducts, isCategorySlug, isProductSort, sortOptions } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Shop",
-  description: "Breads, pastries, cakes and spice blends from Kemi's Artisanal African Bakery & Spice Shop.",
-};
-
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
@@ -25,6 +20,16 @@ function href(params: { q?: string; category?: string; sort?: string }) {
   return qs ? `/shop?${qs}` : "/shop";
 }
 
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const category = first((await searchParams).category);
+  const match = categories.find((c) => c.slug === category);
+  return {
+    title: match ? match.name : "Shop",
+    description: match?.blurb ?? "Breads, pastries, cakes and spice blends from Kemi's Artisanal African Bakery & Spice Shop.",
+    alternates: { canonical: match ? `/shop?category=${match.slug}` : "/shop" },
+  };
+}
+
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
   const raw = await searchParams;
   const q = (first(raw.q) ?? "").trim().slice(0, 80);
@@ -33,7 +38,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const category = isCategorySlug(categoryParam) ? categoryParam : undefined;
   const sort = isProductSort(sortParam) ? sortParam : "featured";
 
-  const results = getProducts({ q, category, sort });
+  const activeCategory = categories.find((c) => c.slug === category);
+  const results = await getProducts({ q, category, sort });
   const filtered = Boolean(q || category);
 
   const pill = (active: boolean) =>
@@ -44,7 +50,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
   return (
     <Container className="py-10 sm:py-16">
-      <h1 className="text-headline">Shop</h1>
+      <h1 className="text-headline">{activeCategory?.name ?? "Shop"}</h1>
+      {activeCategory && <p className="mt-3 max-w-xl text-lead text-muted">{activeCategory.blurb}</p>}
 
       <Form action="/shop" role="search" className="mt-8 flex max-w-xl gap-3">
         {category && <input type="hidden" name="category" value={category} />}

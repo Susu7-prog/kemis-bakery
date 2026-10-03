@@ -10,7 +10,7 @@ export type Category = {
 
 export type ProductBadge = "Bestseller" | "New";
 
-/** Mirrors the planned `products` table. `price` is whole naira. */
+/** Mirrors the `products` table. `price` is naira. `galleryUrls` includes the primary image first. */
 export type Product = {
   id: string;
   slug: string;
@@ -18,6 +18,7 @@ export type Product = {
   description: string;
   price: number;
   imageUrl: string;
+  galleryUrls: string[];
   category: CategorySlug;
   stock: number;
   badge?: ProductBadge;

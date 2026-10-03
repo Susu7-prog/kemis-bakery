@@ -3,8 +3,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { ProductGrid } from "@/components/product/product-grid";
 import { getBestsellers } from "@/lib/products";
 
-export function Bestsellers() {
-  const items = getBestsellers(4);
+export async function Bestsellers() {
+  const items = await getBestsellers(4);
   return (
     <section aria-labelledby="bestsellers-title" className="py-20 sm:py-28">
       <Container>

@@ -10,15 +10,16 @@ export const metadata: Metadata = {
   description: "Browse Kemi's by breads, pastries and snacks, cakes, and spice blends.",
 };
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const entries = await Promise.all(
+    categories.map(async (c) => ({ c, cover: await getCategoryCover(c.slug), count: await getCategoryCount(c.slug) })),
+  );
   return (
     <Container className="py-10 sm:py-16">
       <h1 className="text-headline">Collections</h1>
       <p className="mt-4 max-w-xl text-lead text-muted">Four ways into the range. Pick one and we&rsquo;ll show you what&rsquo;s fresh.</p>
       <ul className="mt-12 grid gap-8 sm:grid-cols-2">
-        {categories.map((c) => {
-          const cover = getCategoryCover(c.slug);
-          const count = getCategoryCount(c.slug);
+        {entries.map(({ c, cover, count }) => {
           return (
             <li key={c.slug}>
               <Link href={`/shop?category=${c.slug}`} className="group grid grid-cols-[40%_1fr] items-center gap-5 sm:gap-6">

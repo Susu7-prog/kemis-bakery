@@ -6,8 +6,8 @@ import { getProductsBySlugs } from "@/lib/products";
 const heroSlugs = ["agege-loaf", "meat-pie-box", "suya-spice-yaji"] as const;
 const offsets = ["lg:translate-y-0", "lg:translate-y-16", "lg:-translate-y-6"] as const;
 
-export function Hero() {
-  const items = getProductsBySlugs(heroSlugs);
+export async function Hero() {
+  const items = await getProductsBySlugs(heroSlugs);
   return (
     <section aria-labelledby="hero-title" className="overflow-hidden">
       <Container className="grid gap-12 pb-16 pt-10 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-10 lg:pb-28 lg:pt-20">

@@ -4,15 +4,20 @@ import { Container } from "@/components/layout/container";
 import { categories } from "@/lib/data/categories";
 import { getCategoryCount, getCategoryCover } from "@/lib/products";
 
-export function Categories() {
+export async function Categories() {
+  const entries = await Promise.all(
+    categories.map(async (category) => ({
+      category,
+      cover: await getCategoryCover(category.slug),
+      count: await getCategoryCount(category.slug),
+    })),
+  );
   return (
     <section aria-labelledby="categories-title" className="border-t border-line bg-surface py-20 sm:py-28">
       <Container>
         <h2 id="categories-title" className="max-w-2xl text-headline">Start with what you&rsquo;re craving.</h2>
         <ul className="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
-          {categories.map((category) => {
-            const cover = getCategoryCover(category.slug);
-            const count = getCategoryCount(category.slug);
+          {entries.map(({ category, cover, count }) => {
             return (
               <li key={category.slug}>
                 <Link href={`/shop?category=${category.slug}`} className="group block">

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { cart, useCart, useCartOpen } from "@/lib/cart/cart-store";
 import { formatPrice } from "@/lib/format";
 import { Sheet } from "@/components/ui/sheet";
@@ -46,7 +47,7 @@ export function CartSheet() {
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="font-medium">{item.name}</p>
+                    <Link href={`/products/${item.slug}`} onClick={() => cart.close()} className="font-medium hover:text-accent">{item.name}</Link>
                     <p className="shrink-0 font-medium">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                   <p className="text-caption text-muted">{formatPrice(item.price)} each</p>
