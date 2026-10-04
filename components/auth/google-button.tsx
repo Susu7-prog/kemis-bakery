@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
+import { NEXT_COOKIE, NEXT_COOKIE_MAX_AGE_SECONDS } from "@/lib/auth/next-cookie";
 
 function GoogleMark() {
   return (
@@ -28,9 +29,10 @@ export function GoogleSignInButton({ next }: { next: string }) {
       setPending(false);
       return;
     }
+    document.cookie = `${NEXT_COOKIE}=${encodeURIComponent(next)}; Path=/; Max-Age=${NEXT_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     // On success the browser navigates to Google, so only failures return here.
     if (oauthError) {

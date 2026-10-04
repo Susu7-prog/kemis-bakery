@@ -44,7 +44,9 @@ export type OrderDeps = {
     items: OrderLineInput[];
     expectedSubtotal: number | null;
   }): Promise<CreateOrderOutcome>;
-  sendEmail(message: { to: string; subject: string; html: string; text: string }): Promise<{ ok: boolean }>;
+  sendEmail(message: { to: string; subject: string; html: string; text: string; idempotencyKey?: string }): Promise<{ ok: boolean; reason?: string; status?: number; detail?: string }>;
+  /** Public contact address shown in the confirmation email, if the shop has configured one. */
+  contactEmail?: string;
   markEmailSent(orderId: string): Promise<void>;
   log?(event: string, data?: Record<string, unknown>): void;
 };
@@ -132,8 +134,13 @@ export async function placeOrder(deps: OrderDeps, raw: unknown, userId: string |
         items: order.items,
         subtotal: order.subtotal,
         total: order.total,
+        customerEmail: order.customerEmail,
+        phone: fields.data.phone,
+        address: fields.data.address,
+        city: fields.data.city,
+        contactEmail: deps.contactEmail,
       });
-      const result = await deps.sendEmail({ to: order.customerEmail, ...message });
+      const result = await deps.sendEmail({ to: order.customerEmail, ...message, idempotencyKey: `order-confirmation-${order.orderId}` });
       if (result.ok) {
         emailSent = true;
         try {
@@ -142,7 +149,7 @@ export async function placeOrder(deps: OrderDeps, raw: unknown, userId: string |
           deps.log?.("mark_email_sent_failed", { orderNumber: order.orderNumber, message: error instanceof Error ? error.message : "unknown" });
         }
       } else {
-        deps.log?.("confirmation_email_not_sent", { orderNumber: order.orderNumber });
+        deps.log?.("confirmation_email_not_sent", { orderNumber: order.orderNumber, reason: result.reason, status: result.status, detail: result.detail });
       }
     } catch (error) {
       deps.log?.("confirmation_email_error", { orderNumber: order.orderNumber, message: error instanceof Error ? error.message : "unknown" });

@@ -1,4 +1,4 @@
-import type { MailgunConfig } from "@/lib/email/mailgun-client";
+import type { ResendConfig } from "@/lib/email/resend-client";
 
 /**
  * Central, typed access to environment configuration.
@@ -19,12 +19,16 @@ export function getSupabaseAdminConfig(): { url: string; serviceRoleKey: string 
   return { url, serviceRoleKey };
 }
 
-export function getMailgunConfig(): MailgunConfig | null {
-  const apiKey = process.env.MAILGUN_API_KEY;
-  const domain = process.env.MAILGUN_DOMAIN;
-  const from = process.env.MAILGUN_FROM_EMAIL;
-  if (!apiKey || !domain || !from) return null;
-  return { apiKey, domain, from, baseUrl: process.env.MAILGUN_API_BASE_URL || undefined };
+export function getResendConfig(): ResendConfig | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) return null;
+  return {
+    apiKey,
+    from,
+    replyTo: process.env.RESEND_REPLY_TO_EMAIL || undefined,
+    baseUrl: process.env.RESEND_API_BASE_URL || undefined,
+  };
 }
 
 /** Ordering needs the database (public + service-role access). Email is optional. */

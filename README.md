@@ -2,13 +2,13 @@
 
 An e-commerce storefront for Kemi's: breads, pastries, cakes and spice blends, baked and blended in small batches.
 
-**Stack:** Next.js (App Router) and React, TypeScript (strict), Tailwind CSS v4, Supabase (PostgreSQL and Auth), Google OAuth, Mailgun, GitHub, Vercel.
+**Stack:** Next.js (App Router) and React, TypeScript (strict), Tailwind CSS v4, Supabase (PostgreSQL and Auth), Google OAuth, Resend (email), GitHub, Vercel.
 
 ## What is built
 
 - Storefront: homepage, shop with real search, category filters and sorting, product pages with gallery and related products, collections, about.
 - Cart: add, remove, change quantity, clear, persisted in the browser, desktop drawer and full-screen mobile cart.
-- Checkout: client and server validation, server-side price and stock verification, atomic order creation, duplicate-submission protection, confirmation page and Mailgun confirmation email.
+- Checkout: client and server validation, server-side price and stock verification, atomic order creation, duplicate-submission protection, confirmation page and Resend confirmation email.
 - Accounts: Google sign-in through Supabase Auth, protected account area with profile, order history and order details, protected by Row Level Security.
 - Security, accessibility, SEO and responsive layouts from 320px up. Automated tests for validation, email, order orchestration and the database.
 
@@ -45,10 +45,10 @@ Names only live in `.env.example`; real values go in `.env.local` (git-ignored) 
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase anon key (safe in the browser; RLS protects data) |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Server only** | Creates orders. Bypasses RLS. Never expose it |
-| `MAILGUN_API_KEY` | **Server only** | Mailgun private API key |
-| `MAILGUN_DOMAIN` | **Server only** | Mailgun sending domain |
-| `MAILGUN_FROM_EMAIL` | **Server only** | From address, e.g. `Kemi's <orders@mg.example.com>` |
-| `MAILGUN_API_BASE_URL` | **Server only** | Optional. `https://api.eu.mailgun.net` for EU domains |
+| `RESEND_API_KEY` | **Server only** | Resend API key (starts with `re_`) |
+| `RESEND_FROM_EMAIL` | **Server only** | From address on a Resend-verified domain, e.g. `Kemi's Bakery <orders@yourdomain.com>` |
+| `RESEND_REPLY_TO_EMAIL` | **Server only** | Optional. Where customers' replies go; shown as the contact address in the email |
+| `RESEND_API_BASE_URL` | **Server only** | Optional, testing only. Leave empty in production |
 
 `NEXT_PUBLIC_*` values are baked into the browser code at build time, so set them before building, and redeploy after changing them.
 
@@ -83,26 +83,29 @@ Names only live in `.env.example`; real values go in `.env.local` (git-ignored) 
    - Copy the client ID and client secret.
 3. **Supabase**, Authentication, Providers, **Google**: enable it and paste the client ID and secret. The secret lives only in Supabase; it is never in this repo.
 4. **Supabase**, Authentication, **URL Configuration**:
-   - Site URL: your production URL, e.g. `https://kemis.example.com`
-   - Redirect URLs, add:
+   - Site URL: your production URL, e.g. `https://kemis.example.com` (no trailing slash)
+   - Redirect URLs, add exactly:
      - `http://localhost:3000/auth/callback`
      - `https://kemis.example.com/auth/callback`
-     - for Vercel preview deployments: `https://*-<your-team>.vercel.app/auth/callback`
+     - for Vercel preview deployments (optional): `https://*-<your-team>.vercel.app/auth/callback`
+
+   The app sends the callback URL with no query string, so these exact entries match.
 5. The app computes its callback from the current origin, so the same code works locally and on Vercel.
 
-## Mailgun setup
+## Resend setup (order confirmation emails)
 
-1. Create a Mailgun account and **add and verify a sending domain** (DNS records). A sandbox domain only delivers to authorised recipients.
-2. Copy the private API key. Set `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` and `MAILGUN_FROM_EMAIL`. For an EU-region domain also set `MAILGUN_API_BASE_URL=https://api.eu.mailgun.net`.
-3. Mailgun is only called from the server. If it is unconfigured or rejects a message, the order is still created, the confirmation page says plainly that the email could not be sent, and a replayed submission retries the email. The app never claims an email was delivered unless Mailgun accepted it.
+1. Create a Resend account, then **Domains, Add Domain**, and add the DNS records it shows (SPF and DKIM). Wait until the domain says *Verified*. Until then Resend only delivers to your own account email, which is fine for a first smoke test but not for customers.
+2. **API Keys, Create API Key** with *Sending access*. Copy it once.
+3. Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL` (an address on the verified domain). Optionally set `RESEND_REPLY_TO_EMAIL` to a mailbox someone reads.
+4. Resend is only called from the server. If it is unconfigured or rejects a message, the order is still created, the confirmation page says plainly that the email could not be sent, and a replayed submission retries it. The email request carries an idempotency key, so a retry cannot send the customer two copies. The app never claims an email was sent unless Resend accepted it.
 
 ## Deployment (Vercel)
 
 1. Push the repository to GitHub.
 2. In Vercel, **Add New Project**, import the repo. The framework is detected automatically.
-3. Add all environment variables above for **Production** (and Preview if you want previews to work). Set `NEXT_PUBLIC_SITE_URL` to the production URL.
+3. Add all environment variables above (Supabase, Resend and `NEXT_PUBLIC_SITE_URL`) for **Production** (and Preview if you want previews to work). Set `NEXT_PUBLIC_SITE_URL` to the production URL.
 4. Apply the Supabase migrations and seed (see above), then **Deploy**.
-5. Add the production callback URL to Supabase (step 4 of Google sign-in) and the Vercel domain to Google if you use a custom domain with Supabase's Site URL.
+5. Make sure the production callback URL is in Supabase's Redirect URLs (step 4 of Google sign-in).
 6. Smoke test: browse, add to cart, check out as a guest, sign in with Google, open the order in your account.
 
 ## Testing
@@ -110,7 +113,7 @@ Names only live in `.env.example`; real values go in `.env.local` (git-ignored) 
 `npm test` runs, with Node's built-in runner and no extra frameworks:
 
 - validation (fields, phone numbers, items, idempotency keys, redirect safety)
-- confirmation email (HTML and text, escaping) and the Mailgun client (success, rejection, network failure, no key leakage)
+- confirmation email (HTML and text, required details, escaping) and the Resend client (success, rejection, network failure, no key leakage)
 - order orchestration (invalid input never reaches the database, email failure never fails or repeats an order, replays, generic errors)
 - database (in-process PostgreSQL via PGlite): migrations, seed, constraints, `create_order()` (price tampering, overselling, idempotency, concurrent submissions), and Row Level Security for guests, customers and anonymous visitors.
 

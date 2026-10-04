@@ -1,15 +1,16 @@
 import "server-only";
 import { getAdminSupabase } from "@/lib/supabase/admin";
-import { getMailgunConfig } from "@/lib/env";
-import { createMailgunSender } from "@/lib/email/mailgun-client";
+import { getResendConfig } from "@/lib/env";
+import { createResendSender } from "@/lib/email/resend-client";
 import { parseCreateOrderResult } from "@/lib/orders/rpc";
 import type { OrderDeps } from "@/lib/orders/place-order";
 
-/** Wires order placement to Supabase (service role) and Mailgun. Returns null if ordering isn't configured. */
+/** Wires order placement to Supabase (service role) and Resend. Returns null if ordering isn't configured. */
 export function createOrderDeps(): OrderDeps | null {
   const admin = getAdminSupabase();
   if (!admin) return null;
-  const sendEmail = createMailgunSender(getMailgunConfig());
+  const resendConfig = getResendConfig();
+  const sendEmail = createResendSender(resendConfig);
 
   return {
     async createOrder({ idempotencyKey, userId, fields, items, expectedSubtotal }) {
@@ -32,6 +33,7 @@ export function createOrderDeps(): OrderDeps | null {
       const { error } = await admin.from("orders").update({ confirmation_email_sent_at: new Date().toISOString() }).eq("id", orderId);
       if (error) throw new Error(error.message);
     },
+    contactEmail: resendConfig?.replyTo,
     log: (event, data) => console.error(`[orders] ${event}`, data ?? {}),
   };
 }

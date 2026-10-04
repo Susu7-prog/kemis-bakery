@@ -16,7 +16,7 @@ const created = (over: Record<string, unknown> = {}): CreateOrderOutcome => ({
 });
 
 function deps(over: Partial<OrderDeps> = {}) {
-  const calls = { createOrder: 0, sendEmail: 0, markEmailSent: 0, logs: [] as string[], lastCreate: undefined as unknown, lastEmail: undefined as { to: string; html: string; text: string } | undefined };
+  const calls = { createOrder: 0, sendEmail: 0, markEmailSent: 0, logs: [] as string[], lastCreate: undefined as unknown, lastEmail: undefined as { to: string; html: string; text: string; idempotencyKey?: string } | undefined };
   const d: OrderDeps = {
     createOrder: async (args) => { calls.createOrder++; calls.lastCreate = args; return created(); },
     sendEmail: async (m) => { calls.sendEmail++; calls.lastEmail = m; return { ok: true }; },
@@ -38,6 +38,8 @@ test("happy path: creates the order, emails the customer, marks the email sent",
   assert.equal(args.fields.phone, "+2348031234567");
   assert.equal(calls.lastEmail?.to, "amaka@example.com");
   assert.match(calls.lastEmail?.text ?? "", /KEMI-10001/);
+  assert.match(calls.lastEmail?.text ?? "", /12 Admiralty Way, Lagos/);
+  assert.equal((calls.lastEmail as { idempotencyKey?: string } | undefined)?.idempotencyKey, "order-confirmation-o1");
 });
 
 test("invalid input never reaches the database", async () => {
@@ -53,7 +55,7 @@ test("invalid input never reaches the database", async () => {
 });
 
 test("a failed confirmation email does not fail or repeat the order, and is not reported as sent", async () => {
-  for (const failing of [async () => ({ ok: false }), async () => { throw new Error("mailgun down"); }]) {
+  for (const failing of [async () => ({ ok: false }), async () => { throw new Error("email provider down"); }]) {
     const { d, calls } = deps({ sendEmail: failing });
     const r = await placeOrder(d, body(), null);
     assert.ok(r.ok);
