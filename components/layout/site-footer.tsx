@@ -32,7 +32,8 @@ export function SiteFooter() {
         <nav aria-label="Account">
           <h2 className="font-display text-lead">Account</h2>
           <ul className="mt-4 space-y-2 text-paper/75">
-            <li><Link href="/login" className="hover:text-paper hover:underline underline-offset-4">Sign in</Link></li>
+            <li><Link href="/account" className="hover:text-paper hover:underline underline-offset-4">Your account</Link></li>
+            <li><Link href="/account/orders" className="hover:text-paper hover:underline underline-offset-4">Order history</Link></li>
           </ul>
         </nav>
       </Container>

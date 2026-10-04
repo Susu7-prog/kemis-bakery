@@ -10,3 +10,9 @@ const priceFormatter = new Intl.NumberFormat(siteConfig.locale, {
 export function formatPrice(naira: number): string {
   return priceFormatter.format(naira);
 }
+
+const dateFormatter = new Intl.DateTimeFormat(siteConfig.locale, { dateStyle: "medium", timeZone: "Africa/Lagos" });
+
+export function formatDate(iso: string): string {
+  return dateFormatter.format(new Date(iso));
+}

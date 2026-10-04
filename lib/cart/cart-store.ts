@@ -153,6 +153,30 @@ export const cart = {
     load();
     commit([]);
   },
+  /** Applies authoritative price and stock from the server after a rejected checkout. */
+  applyServerLines(lines: { productId: string; price: number; stock: number }[]) {
+    load();
+    commit(
+      items
+        .map((item) => {
+          const line = lines.find((l) => l.productId === item.productId);
+          if (!line) return item;
+          const maxQuantity = Math.max(0, Math.floor(line.stock));
+          return { ...item, price: line.price, maxQuantity, quantity: maxQuantity > 0 ? clampQuantity(item.quantity, maxQuantity) : 0 };
+        })
+        .filter((item) => item.quantity > 0 && item.maxQuantity > 0),
+    );
+  },
+  /** Caps a line at the stock the server reported, removing it if nothing is left. */
+  limitStock(productId: string, available: number) {
+    load();
+    const maxQuantity = Math.max(0, Math.floor(available));
+    commit(
+      items
+        .map((i) => (i.productId === productId ? { ...i, maxQuantity, quantity: maxQuantity > 0 ? clampQuantity(i.quantity, maxQuantity) : 0 } : i))
+        .filter((i) => i.quantity > 0 && i.maxQuantity > 0),
+    );
+  },
   open() {
     isOpen = true;
     emit();
@@ -172,4 +196,9 @@ export function useCart() {
 
 export function useCartOpen() {
   return useSyncExternalStore(subscribe, () => isOpen, () => false);
+}
+
+/** False during server rendering and hydration, true once the saved cart has been read. */
+export function useCartHydrated() {
+  return useSyncExternalStore(subscribe, () => true, () => false);
 }

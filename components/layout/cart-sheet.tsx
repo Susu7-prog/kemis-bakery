@@ -79,9 +79,8 @@ export function CartSheet() {
               <p className="font-medium">Subtotal</p>
               <p className="font-display text-title">{formatPrice(subtotal)}</p>
             </div>
-            <p className="text-caption text-muted">Delivery and final totals are confirmed at checkout.</p>
-            <Button size="lg" className="w-full" disabled aria-describedby="checkout-note">Checkout</Button>
-            <p id="checkout-note" className="text-center text-caption text-muted">Checkout isn&rsquo;t available yet.</p>
+            <p className="text-caption text-muted">Prices and stock are confirmed when you place your order.</p>
+            <ButtonLink href="/checkout" size="lg" className="w-full" onClick={() => cart.close()}>Checkout</ButtonLink>
             <div className="flex justify-between">
               <Button variant="quiet" onClick={() => cart.close()}>Continue shopping</Button>
               <Button variant="quiet" onClick={() => cart.clear()}>Clear cart</Button>

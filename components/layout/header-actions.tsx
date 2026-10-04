@@ -23,7 +23,7 @@ export function HeaderActions() {
       <button type="button" className={iconButton} aria-label="Search products" aria-haspopup="dialog" onClick={() => setSearchOpen(true)}>
         <SearchIcon />
       </button>
-      <Link href="/login" className={`${iconButton} max-lg:hidden`} aria-label="Account">
+      <Link href="/account" className={`${iconButton} max-lg:hidden`} aria-label="Account">
         <UserIcon />
       </Link>
       <button
@@ -81,7 +81,7 @@ export function HeaderActions() {
         </div>
         <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-(--gutter) pb-10 pt-6">
           <ul className="divide-y divide-line border-y border-line">
-            {[...mainNav, { label: "Account", href: "/login" }].map((link) => (
+            {[...mainNav, { label: "Account", href: "/account" }].map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}

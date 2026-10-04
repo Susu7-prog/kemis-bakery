@@ -93,7 +93,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
       <div className="mt-10">
         {results.length > 0 ? (
-          <ProductGrid products={results} priorityCount={4} />
+          <ProductGrid products={results} priorityCount={4} headingLevel="h2" />
         ) : (
           <div className="max-w-md space-y-4 py-10">
             <h2 className="font-display text-title">Nothing matches that search.</h2>

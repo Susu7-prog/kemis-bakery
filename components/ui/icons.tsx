@@ -41,3 +41,6 @@ export const PlusIcon = (p: SVGProps<SVGSVGElement>) => (
 export const MinusIcon = (p: SVGProps<SVGSVGElement>) => (
   <Icon {...p}><path d="M5 12h14" /></Icon>
 );
+export const CheckIcon = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="m5 12.5 4.5 4.5L19 7.5" /></Icon>
+);

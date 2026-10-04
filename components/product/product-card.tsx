@@ -7,7 +7,7 @@ import { AddToCartButton } from "./add-to-cart-button";
 import { Availability } from "./availability";
 import type { Product } from "@/types";
 
-export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
+export function ProductCard({ product, priority = false, headingLevel: Heading = "h3" }: { product: Product; priority?: boolean; headingLevel?: "h2" | "h3" }) {
   const soldOut = product.stock < 1;
   return (
     <article className="flex h-full flex-col">
@@ -28,9 +28,9 @@ export function ProductCard({ product, priority = false }: { product: Product; p
       </div>
       <div className="mt-4 flex flex-1 flex-col">
         <p className="text-caption text-muted">{getCategoryName(product.category)}</p>
-        <h3 className="mt-1 font-display text-lead font-semibold leading-snug">
+        <Heading className="mt-1 font-display text-lead font-semibold leading-snug">
           <Link href={`/products/${product.slug}`} className="hover:text-accent">{product.name}</Link>
-        </h3>
+        </Heading>
         <div className="mt-2 flex items-baseline justify-between gap-3">
           <p className="font-medium">{formatPrice(product.price)}</p>
           <Availability stock={product.stock} />
